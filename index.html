@@ -257,6 +257,72 @@
             border-radius: 25px;
             cursor: pointer;
         }
+
+        /* 移动端适配样式 - 仅新增这部分，不修改原有样式 */
+        @media screen and (max-width: 768px) {
+            /* 竖屏手机下调整布局为纵向 */
+            .rank-item {
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+            }
+            .rank-number {
+                margin: -20px -20px 15px -20px;
+                border-radius: 12px 12px 0 0;
+                padding: 10px;
+                font-size: 48px;
+            }
+            .media-cards {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .media-preview {
+                height: 150px;
+            }
+            .rank-stats {
+                flex-direction: row;
+                justify-content: space-around;
+                align-items: center;
+                padding-left: 0;
+                padding-top: 15px;
+                border-left: none;
+                border-top: 1px solid #eee;
+            }
+            .stat-hot {
+                text-align: center;
+            }
+            .hot-number {
+                font-size: 28px;
+            }
+            .title {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+            .content-title {
+                font-size: 22px;
+            }
+            .content-desc {
+                font-size: 16px;
+            }
+            .logo {
+                height: 60px;
+            }
+            /* 弹窗适配 */
+            .modal-media {
+                flex-direction: column;
+            }
+            .modal-media img,
+            .modal-media video {
+                width: 100%;
+                height: 200px;
+            }
+            .modal-title {
+                font-size: 22px;
+            }
+            .modal-desc {
+                font-size: 15px;
+            }
+        }
     </style>
 </head>
 
@@ -499,6 +565,51 @@
                 </div>
             </div>
         </div>
+        <div class="rank-item">
+            <div class="rank-number">#5</div>
+
+            <div class="rank-content">
+                <div class="content-header">
+                    <div class="content-title">
+                       let's go哦豁豁
+                    </div>
+                    <div class="content-desc">
+                       https://www.bilibili.com/video/BV1NEoUB9ErT/
+                    </div>
+                </div>
+
+                <div class="media-cards">
+                    <div class="media-card">
+                        <div class="media-preview" style="background-image: url('./ASS/img/5.avif');">
+                        </div>
+                        <div class="media-label"></div>
+                    </div>
+
+                    <div class="media-card">
+                        <div class="media-preview">
+                            <video loop playsinline>
+                                <source src="https://jx.ouo.chat/bl/?url=BV1NEoUB9ErT&p=1" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="media-label"></div>
+                    </div>
+                </div>
+
+                <button class="view-btn">观看完整作品 → →</button>
+            </div>
+
+            <div class="rank-stats">
+                <div class="stat-hot">
+                    <div class="hot-number">
+                        810k
+                    </div>
+                    <div class="hot-label">热度指数</div>
+                </div>
+                <div class="stat-views">
+                    81.0w 次观看
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -523,6 +634,12 @@
     
 
 <script>
+// 检测设备类型（移动端/桌面端）
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           (window.innerWidth <= 768);
+}
+
 // 视频悬浮播放逻辑
 const items = document.querySelectorAll('.rank-item');
 const videos = document.querySelectorAll('video');
@@ -532,18 +649,35 @@ videos.forEach(vid => {
 });
 items.forEach(item => {
     let video = item.querySelector('video');
-    item.addEventListener('mouseenter', () => {
-        if(video){
-            video.muted = false;
-            video.play();
-        }
-    });
-    item.addEventListener('mouseleave', () => {
-        if(video){
-            video.pause();
-            video.muted = true;
-        }
-    });
+    // 移动端触摸替代悬浮事件
+    if (isMobile()) {
+        item.addEventListener('touchstart', () => {
+            if(video){
+                video.muted = false;
+                video.play();
+            }
+        });
+        item.addEventListener('touchend', () => {
+            if(video){
+                video.pause();
+                video.muted = true;
+            }
+        });
+    } else {
+        // 桌面端保留原有悬浮逻辑
+        item.addEventListener('mouseenter', () => {
+            if(video){
+                video.muted = false;
+                video.play();
+            }
+        });
+        item.addEventListener('mouseleave', () => {
+            if(video){
+                video.pause();
+                video.muted = true;
+            }
+        });
+    }
 });
 
 // 弹窗详情功能
@@ -587,6 +721,13 @@ function closeModal(){
 modal.addEventListener('click', function(e){
     if(e.target === modal) closeModal();
 });
+
+// 移动端点击空白处关闭弹窗（补充适配）
+if (isMobile()) {
+    modal.addEventListener('touchstart', function(e){
+        if(e.target === modal) closeModal();
+    });
+}
 </script>
 
 </body>
